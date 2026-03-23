@@ -65,7 +65,7 @@ app.post('/api/workstations/stop', asyncHandler(async (req, res) => {
 }));
 
 // Error handler
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
     console.error('API Error:', err);
     res.status(500).json({ error: err.message || 'Internal Server Error' });
 });
