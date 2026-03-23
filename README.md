@@ -18,14 +18,14 @@ The portal consists of:
 ## Application in Action
 
 ### Session Recording
-![Workstation Portal Demo](/home/admin_robedwards_altostrat_com/.gemini/antigravity/brain/6a1a1c72-7cfd-4eea-9ce7-7c3a0d33c2a4/workstation_portal_demo_1774280293629.webp)
+![Workstation Portal Demo](docs/assets/workstation_portal_demo.webp)
 
 ### Key Screens
 **Auto-Discovery View**
-![Auto-Discovery Dashboard](/home/admin_robedwards_altostrat_com/.gemini/antigravity/brain/6a1a1c72-7cfd-4eea-9ce7-7c3a0d33c2a4/portal_dashboard_1774280324008.png)
+![Auto-Discovery Dashboard](docs/assets/portal_dashboard.png)
 
 **Active Workstation View**
-![Running Workstation](/home/admin_robedwards_altostrat_com/.gemini/antigravity/brain/6a1a1c72-7cfd-4eea-9ce7-7c3a0d33c2a4/portal_interaction_running_1774280398516.png)
+![Running Workstation](docs/assets/portal_interaction_running.png)
 
 ## Getting Started
 
