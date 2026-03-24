@@ -24,13 +24,16 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:5173'];
+app.use(cors({ origin: allowedOrigins }));
+
 app.use(express.json());
 
 /**
  * Helper to create a user-scoped WorkstationsClient using an OAuth access token.
  */
-const getUserScopedClient = (req) => {
+const getUserScopedClient = async (req) => {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
     
@@ -41,6 +44,16 @@ const getUserScopedClient = (req) => {
     }
 
     const authClient = new OAuth2Client();
+    
+    try {
+        await authClient.getTokenInfo(token);
+    } catch (e) {
+        console.error('Invalid token:', e.message);
+        const err = new Error('Unauthorized: Invalid token');
+        err.status = 401;
+        throw err;
+    }
+
     authClient.setCredentials({ access_token: token });
 
     return new WorkstationsClient({ authClient });
@@ -67,12 +80,14 @@ const asyncHandler = fn => (req, res, next) => {
  */
 app.get('/api/workstations/all', asyncHandler(async (req, res) => {
     const { projectId } = req.query;
-    if (!projectId) return res.status(400).json({ error: 'Missing projectId' });
+    if (!projectId || !/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/.test(projectId)) {
+        return res.status(400).json({ error: 'Missing or invalid projectId' });
+    }
 
     // Use wildcards to fetch across all locations, clusters, and configs in one shot!
     const parent = `projects/${projectId}/locations/-/workstationClusters/-/workstationConfigs/-`;
 
-    const client = getUserScopedClient(req);
+    const client = await getUserScopedClient(req);
 
     // Some GCP APIs paginate. Since we want all, auto-pagination is handled by the Node SDK if we omit maxResults
     const [workstations] = await client.listWorkstations({ parent });
@@ -91,8 +106,8 @@ app.get('/api/workstations/all', asyncHandler(async (req, res) => {
  */
 app.post('/api/workstations/start', asyncHandler(async (req, res) => {
     const { name } = req.body;
-    if (!name) return res.status(400).json({ error: 'Missing workstation name' });
-    const client = getUserScopedClient(req);
+    if (!name || !name.startsWith('projects/')) return res.status(400).json({ error: 'Missing or invalid workstation name' });
+    const client = await getUserScopedClient(req);
     const [operation] = await client.startWorkstation({ name });
     res.json({ message: 'Started', operation: operation.name });
 }));
@@ -107,11 +122,17 @@ app.post('/api/workstations/start', asyncHandler(async (req, res) => {
  */
 app.post('/api/workstations/stop', asyncHandler(async (req, res) => {
     const { name } = req.body;
-    if (!name) return res.status(400).json({ error: 'Missing workstation name' });
-    const client = getUserScopedClient(req);
+    if (!name || !name.startsWith('projects/')) return res.status(400).json({ error: 'Missing or invalid workstation name' });
+    const client = await getUserScopedClient(req);
     const [operation] = await client.stopWorkstation({ name });
     res.json({ message: 'Stopped', operation: operation.name });
 }));
+
+/**
+ * GET /healthz
+ * Service health check endpoint.
+ */
+app.get('/healthz', (req, res) => res.status(200).json({ status: 'ok' }));
 
 /**
  * Global Express error handling middleware.
@@ -128,4 +149,4 @@ app.listen(PORT, () => {
     console.log(`Backend server running on port ${PORT}`);
 });
 
-// insert more robust logging   
+// insert more robust logging

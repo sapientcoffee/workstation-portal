@@ -21,6 +21,8 @@ import { Terminal, Play, Square, ExternalLink, RefreshCw, Server, Settings, Sear
 import { signInWithPopup, signOut, GoogleAuthProvider } from 'firebase/auth';
 import { auth, googleProvider } from './firebase';
 
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 /**
  * Main Application Component for the Google Cloud Workstations Developer Portal.
  * Handles state management, API communication, and renders the UI for workstation management.
@@ -82,11 +84,19 @@ function App() {
 
     setLoading(true); setError(''); setHasSearched(true);
     try {
-      const res = await fetch(`/api/workstations/all?projectId=${projectId}`, {
+      const url = `${API_URL}/api/workstations/all?projectId=${projectId}`;
+      console.log('Fetching workstations from:', url);
+      const res = await fetch(url, {
           headers: {
               'Authorization': `Bearer ${accessToken}`
           }
       });
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await res.text();
+        console.error('Non-JSON response from:', url, 'Status:', res.status, 'Body:', text.substring(0, 200));
+        throw new Error(`API returned non-JSON (status ${res.status}). Check that VITE_API_URL is correct and the backend is running. URL: ${url}`);
+      }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch workstations');
       setWorkstations(data || []);
@@ -109,7 +119,7 @@ function App() {
     if (!accessToken) return setError('Not authenticated');
     setLoading(true); setError('');
     try {
-      const res = await fetch(`/api/workstations/${action}`, {
+      const res = await fetch(`${API_URL}/api/workstations/${action}`, {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json',
