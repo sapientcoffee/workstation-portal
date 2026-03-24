@@ -1,0 +1,10 @@
+.git
+.gitignore
+node_modules/
+dist/
+test_*.mjs
+*.txt
+.github/
+eslint.config.js
+ui_url.txt
+api_url.txt

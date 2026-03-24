@@ -16,8 +16,19 @@
 
 import { useState, useEffect } from 'react';
 
-import { Terminal, Play, Square, ExternalLink, RefreshCw, Server, Settings, Search } from 'lucide-react';
+import { Terminal, Play, Square, ExternalLink, RefreshCw, Server, Settings, Search, LogOut, LogIn } from 'lucide-react';
 
+import { signInWithPopup, signOut, GoogleAuthProvider } from 'firebase/auth';
+import { auth, googleProvider } from './firebase';
+
+const API_URL = import.meta.env.VITE_API_URL || '';
+
+/**
+ * Main Application Component for the Google Cloud Workstations Developer Portal.
+ * Handles state management, API communication, and renders the UI for workstation management.
+ * 
+ * @returns {JSX.Element} The rendered React application.
+ */
 function App() {
   const [projectId, setProjectId] = useState(localStorage.getItem('gcp_projectId') || 'coffee-and-codey');
   const [workstations, setWorkstations] = useState([]);
@@ -25,16 +36,67 @@ function App() {
   const [error, setError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
 
+  // Authentication State
+  const [user, setUser] = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
+
+  /**
+   * Handles Google Sign-In via Firebase Popup
+   */
+  const handleLogin = async () => {
+    try {
+        setError('');
+        const result = await signInWithPopup(auth, googleProvider);
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        if (credential) setAccessToken(credential.accessToken);
+        setUser(result.user);
+    } catch (err) {
+        setError('Login failed: ' + err.message);
+    }
+  };
+
+  /**
+   * Handles Sign-Out
+   */
+  const handleLogout = async () => {
+      await signOut(auth);
+      setUser(null);
+      setAccessToken(null);
+      setWorkstations([]);
+      setHasSearched(false);
+  };
+
   // Save settings
   useEffect(() => {
     localStorage.setItem('gcp_projectId', projectId);
   }, [projectId]);
 
+  /**
+   * Discovers and retrieves all Cloud Workstations for the currently set project ID.
+   * Updates state with the fetched workstations and handles loading/error states.
+   * 
+   * @async
+   * @returns {Promise<void>}
+   */
   const discoverWorkstations = async () => {
     if (!projectId) return setError('Project ID required');
+    if (!accessToken) return setError('Not authenticated');
+
     setLoading(true); setError(''); setHasSearched(true);
     try {
-      const res = await fetch(`/api/workstations/all?projectId=${projectId}`);
+      const url = `${API_URL}/api/workstations/all?projectId=${projectId}`;
+      console.log('Fetching workstations from:', url);
+      const res = await fetch(url, {
+          headers: {
+              'Authorization': `Bearer ${accessToken}`
+          }
+      });
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await res.text();
+        console.error('Non-JSON response from:', url, 'Status:', res.status, 'Body:', text.substring(0, 200));
+        throw new Error(`API returned non-JSON (status ${res.status}). Check that VITE_API_URL is correct and the backend is running. URL: ${url}`);
+      }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch workstations');
       setWorkstations(data || []);
@@ -45,12 +107,24 @@ function App() {
     }
   };
 
+  /**
+   * Handles POST actions (start, stop) for a specific workstation.
+   * 
+   * @async
+   * @param {string} workstationName - The full resource name of the workstation.
+   * @param {'start'|'stop'} action - The action to perform.
+   * @returns {Promise<void>}
+   */
   const handleAction = async (workstationName, action) => {
+    if (!accessToken) return setError('Not authenticated');
     setLoading(true); setError('');
     try {
-      const res = await fetch(`/api/workstations/${action}`, {
+      const res = await fetch(`${API_URL}/api/workstations/${action}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+        },
         body: JSON.stringify({ name: workstationName })
       });
       const data = await res.json();
@@ -65,26 +139,73 @@ function App() {
     }
   };
 
+  /**
+   * Formats the workstation state string for UI display.
+   * Removes 'STATE_' prefix and converts to uppercase.
+   * 
+   * @param {string} state - The raw state string from the API (e.g., 'STATE_RUNNING').
+   * @returns {string} The formatted state string (e.g., 'RUNNING').
+   */
   const getStatusString = (state) => {
     if (!state) return 'UNKNOWN';
     return state.replace('STATE_', '').toUpperCase();
   };
 
+  /**
+   * Determines if a workstation state is in a terminal (non-transitioning) phase.
+   * 
+   * @param {string} state - The raw state string from the API.
+   * @returns {boolean} True if the state is RUNNING, STOPPED, or UNKNOWN.
+   */
   const isTerminalState = (state) => {
     const s = getStatusString(state);
     return ['RUNNING', 'STOPPED', 'UNKNOWN'].includes(s);
   };
 
-  // Helper to extract nice name from GCP resource name
+  /**
+   * Helper to extract the workstation name from a full GCP resource name.
+   * @param {string} name - Full resource name.
+   * @returns {string} The short workstation name.
+   */
   const extractName = (name) => name.split('/').pop();
+
+  /**
+   * Helper to extract the location (region/zone) from a full GCP resource name.
+   * @param {string} name - Full resource name.
+   * @returns {string} The location part of the name.
+   */
   const extractLocation = (name) => {
     const parts = name.split('/');
     return parts[parts.indexOf('locations') + 1] || 'Unknown';
   };
+
+  /**
+   * Helper to extract the workstation config from a full GCP resource name.
+   * @param {string} name - Full resource name.
+   * @returns {string} The workstation config part of the name.
+   */
   const extractConfig = (name) => {
     const parts = name.split('/');
     return parts[parts.indexOf('workstationConfigs') + 1] || 'Unknown';
   };
+
+  // Render Login View if not authenticated
+  if (!user || !accessToken) {
+      return (
+        <div className="portal-container" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '2rem'}}>
+            <div style={{textAlign: 'center'}}>
+                <Terminal size={64} className="text-primary" style={{marginBottom: '1rem', display: 'inline-block'}} />
+                <h1>Workstations Developer Portal</h1>
+                <p style={{color: 'var(--text-muted)'}}>Please sign in with your Google account to access your resources.</p>
+            </div>
+            {error && <div className="error-msg">{error}</div>}
+            <button className="primary" onClick={handleLogin} style={{fontSize: '1.2rem', padding: '1rem 2rem', display: 'flex', alignItems: 'center'}}>
+                <LogIn size={24} style={{marginRight: '0.8rem'}} />
+                Sign in with Google
+            </button>
+        </div>
+      );
+  }
 
   return (
     <div className="portal-container">
@@ -93,10 +214,17 @@ function App() {
           <Terminal size={32} />
           Workstations Developer Portal
         </div>
-        <button className="secondary" onClick={discoverWorkstations} disabled={!projectId || loading}>
-          <RefreshCw size={20} className={loading ? 'spinner' : ''} />
-          Refresh
-        </button>
+        <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
+            <span style={{fontSize: '0.875rem', color: 'var(--text-muted)'}}>
+                Signed in as {user.email}
+            </span>
+            <button className="secondary" onClick={discoverWorkstations} disabled={!projectId || loading}>
+                <RefreshCw size={20} className={loading ? 'spinner' : ''} />
+            </button>
+            <button className="secondary" onClick={handleLogout} title="Log Out">
+                <LogOut size={20} />
+            </button>
+        </div>
       </header>
 
       {error && <div className="error-msg" style={{marginBottom: '1rem'}}>{error}</div>}
