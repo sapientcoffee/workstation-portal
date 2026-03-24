@@ -13,8 +13,10 @@ To securely automate testing against real GCP resources, we use a **Service Acco
    Grant it the `Workstations Viewer` role (or `Workstations Admin` if testing start/stop actions) on the project.
 
 2. **Download the JSON Key**
-   Generate a JSON key for the new Service Account and save it securely in this repository at `.keys/test-sa.json`.
-   *(Note: The `.keys/` directory is globally `.gitignore`d to prevent accidental credential commits).*
+   Generate a JSON key for the new Service Account and save it securely.
+   
+   **Option A (Standard)**: Save it at `.keys/test-sa.json`. This directory is gitignored.
+   **Option B (Recommended/Greener)**: Save it anywhere on your machine (e.g. `~/.config/gcloud/test-sa.json`) and set the environment variable `TEST_SA_KEY_PATH` before running the token script.
 
 3. **Install Dependencies**
    Ensure your backend dependencies are installed, as the script relies on `google-auth-library`:
