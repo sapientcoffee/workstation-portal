@@ -144,6 +144,7 @@ app.use((err, req, res, _next) => {
     res.status(status).json({ error: err.message || 'Internal Server Error' });
 });
 
+/* global process */
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Backend server running on port ${PORT}`);
