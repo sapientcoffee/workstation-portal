@@ -18,6 +18,7 @@ import express from 'express';
 
 import cors from 'cors';
 import { WorkstationsClient } from '@google-cloud/workstations';
+import { OAuth2Client } from 'google-auth-library';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -26,21 +27,53 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const client = new WorkstationsClient();
+/**
+ * Helper to create a user-scoped WorkstationsClient using an OAuth access token.
+ */
+const getUserScopedClient = (req) => {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    if (!token) {
+        const err = new Error('Unauthorized: Missing bearer token');
+        err.status = 401;
+        throw err;
+    }
 
-// Helper to handle API requests and standard errors
+    const authClient = new OAuth2Client();
+    authClient.setCredentials({ access_token: token });
+
+    return new WorkstationsClient({ authClient });
+};
+
+/**
+ * Helper middleware to handle asynchronous Express routes and standard errors.
+ * It wraps the async route handler and catches any rejected promises, passing them to the next error handling middleware.
+ *
+ * @param {Function} fn - The asynchronous route handler function.
+ * @returns {Function} Express middleware function.
+ */
 const asyncHandler = fn => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
 };
 
-// 1. List All Workstations across regions/clusters/configs for a Project
+/**
+ * GET /api/workstations/all
+ * Retrieves all workstations across all locations, clusters, and configurations for a specific Google Cloud Project.
+ * 
+ * @name ListWorkstations
+ * @route {GET} /api/workstations/all
+ * @routeparam {string} projectId - The Google Cloud Project ID retrieved from the query string.
+ */
 app.get('/api/workstations/all', asyncHandler(async (req, res) => {
     const { projectId } = req.query;
     if (!projectId) return res.status(400).json({ error: 'Missing projectId' });
-    
+
     // Use wildcards to fetch across all locations, clusters, and configs in one shot!
     const parent = `projects/${projectId}/locations/-/workstationClusters/-/workstationConfigs/-`;
-    
+
+    const client = getUserScopedClient(req);
+
     // Some GCP APIs paginate. Since we want all, auto-pagination is handled by the Node SDK if we omit maxResults
     const [workstations] = await client.listWorkstations({ parent });
     res.json(workstations);
@@ -48,29 +81,51 @@ app.get('/api/workstations/all', asyncHandler(async (req, res) => {
 
 // We can keep the Start and Stop endpoints exactly as they are since they use the full resource name of the workstation, which the frontend extracts.
 
-// 4. Start Workstation
+/**
+ * POST /api/workstations/start
+ * Starts a specific Google Cloud Workstation.
+ * 
+ * @name StartWorkstation
+ * @route {POST} /api/workstations/start
+ * @bodyparam {string} name - The full resource name of the workstation to start.
+ */
 app.post('/api/workstations/start', asyncHandler(async (req, res) => {
     const { name } = req.body;
     if (!name) return res.status(400).json({ error: 'Missing workstation name' });
+    const client = getUserScopedClient(req);
     const [operation] = await client.startWorkstation({ name });
     res.json({ message: 'Started', operation: operation.name });
 }));
 
-// 5. Stop Workstation
+/**
+ * POST /api/workstations/stop
+ * Stops a specific Google Cloud Workstation.
+ * 
+ * @name StopWorkstation
+ * @route {POST} /api/workstations/stop
+ * @bodyparam {string} name - The full resource name of the workstation to stop.
+ */
 app.post('/api/workstations/stop', asyncHandler(async (req, res) => {
     const { name } = req.body;
     if (!name) return res.status(400).json({ error: 'Missing workstation name' });
+    const client = getUserScopedClient(req);
     const [operation] = await client.stopWorkstation({ name });
     res.json({ message: 'Stopped', operation: operation.name });
 }));
 
-// Error handler
+/**
+ * Global Express error handling middleware.
+ * Catches any unhandled errors and returns a 500 response.
+ */
 app.use((err, req, res, _next) => {
     console.error('API Error:', err);
-    res.status(500).json({ error: err.message || 'Internal Server Error' });
+    const status = err.status || 500;
+    res.status(status).json({ error: err.message || 'Internal Server Error' });
 });
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Backend server running on port ${PORT}`);
 });
+
+// insert more robust logging   
