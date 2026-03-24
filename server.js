@@ -65,11 +65,13 @@ app.post('/api/workstations/stop', asyncHandler(async (req, res) => {
 }));
 
 // Error handler
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
     console.error('API Error:', err);
     res.status(500).json({ error: err.message || 'Internal Server Error' });
 });
 
+/* global process */
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Backend server running on port ${PORT}`);
