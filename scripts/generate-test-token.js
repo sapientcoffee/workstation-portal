@@ -15,10 +15,10 @@ async function generateToken() {
             keyFile: keyPath,
             scopes: ['https://www.googleapis.com/auth/cloud-platform']
         });
-        
+
         const client = await auth.getClient();
         const tokenResponse = await client.getAccessToken();
-        
+
         console.log('\n✅ Successfully generated test token!\n');
         console.log('To bypass UI login, navigate to:');
         console.log(`http://localhost:${port}/?test_token=${tokenResponse.token}\n`);

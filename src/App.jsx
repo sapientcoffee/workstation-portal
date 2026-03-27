@@ -40,6 +40,20 @@ function App() {
   const [user, setUser] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
 
+  // E2E Testing Bypass: Check for test_token in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const testToken = params.get('test_token');
+    if (testToken && !user) {
+        console.log('🛡️ E2E Test Token detected. Bypassing Firebase Auth.');
+        setAccessToken(testToken);
+        setUser({
+            email: 'e2e-tester@google.com',
+            displayName: 'E2E Automated Tester'
+        });
+    }
+  }, [user]);
+
   /**
    * Handles Google Sign-In via Firebase Popup
    */
