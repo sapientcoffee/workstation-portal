@@ -29,7 +29,7 @@ To securely automate testing against real GCP resources, we use a **Service Acco
 Whenever you need to run an automated walkthrough or skip the login screen:
 
 1. **Generate the Token**
-   Run the helper script which uses the Service Account key to mint a fresh 1-hour OAuth Token.
+   Run the helper script which uses the Service Account key to mint a fresh 1-hour OAuth Token. The script defaults to looking for a key at `.keys/test-sa.json`.
    ```bash
    node scripts/generate-test-token.js
    ```

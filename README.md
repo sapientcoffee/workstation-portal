@@ -1,12 +1,12 @@
-# Google Cloud Workstations Developer Portal
+## Overview & Purpose
 
-A sleek, modern developer portal that interacts with the Google Cloud Workstations API. It provides an intuitive interface for discovering, managing, and launching your accessible Cloud Workstations across all locations, clusters, and configurations.
+The **Workstations Developer Portal** is a centralized management interface designed to streamline the developer experience when working with Google Cloud Workstations. In large-scale enterprise environments, managing dozens of workstations across multiple regions and configurations can be cumbersome via the standard Google Cloud Console. 
 
-## Overview
-
-The portal consists of:
-- **Frontend**: A React application powered by Vite, providing a glassmorphism-inspired UI for workstation management.
-- **Backend**: An Express.js Node backend that acts as a proxy to the Google Cloud Workstations API.
+This portal provides:
+- **Centralized Visibility**: See all workstations across all locations and configs in a single, unified view.
+- **Improved Discoverability**: Instantly find resources assigned to your project without navigating complex console sub-menus.
+- **Optimized Lifecycle Management**: Fast start/stop actions to help manage costs and resource availability.
+- **Glassmorphism UI**: A premium, high-performance interface built for speed and aesthetics.
 
 ## Features
 
@@ -14,6 +14,7 @@ The portal consists of:
 - **Lifecycle Management**: Start and Stop workstations directly from the UI.
 - **Direct Launch**: One-click access to launch into your running Cloud Workstation environments.
 - **Live State Updates**: Real-time visualization of workstation states (`RUNNING`, `STOPPED`, `STARTING`, etc.).
+- **Automated Testing Bypass**: Built-in support for Service Account token injection for E2E testing and CI/CD pipelines.
 
 ## Application in Action
 
@@ -24,8 +25,8 @@ The portal consists of:
 **Auto-Discovery View**
 ![Auto-Discovery Dashboard](docs/assets/portal_dashboard.png)
 
-**Active Workstation View**
-![Running Workstation](docs/assets/portal_interaction_running.png)
+**Workstations Discovery**
+![Discovered Workstations](docs/assets/portal_interaction_running.png)
 
 ## Getting Started
 
@@ -55,6 +56,10 @@ The portal consists of:
 
 4. **Access the Portal**
    Open your browser to `http://localhost:5173`.
+
+## Testing
+
+For information on how to perform local E2E testing and automated walkthroughs using the Service Account bypass, see the [Local Testing Guide](docs/local-testing.md).
 
 ## License
 
