@@ -16,7 +16,7 @@
 
 import { useState, useEffect } from 'react';
 
-import { Terminal, Play, Square, ExternalLink, RefreshCw, Server, Settings, Search, LogOut, LogIn } from 'lucide-react';
+import { Terminal, Play, Square, ExternalLink, RefreshCw, Server, Settings, Search, LogOut, LogIn, Trash2 } from 'lucide-react';
 
 import { signInWithPopup, signOut, GoogleAuthProvider } from 'firebase/auth';
 import { auth, googleProvider } from './firebase';
@@ -35,6 +35,10 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
+
+  // Deletion State
+  const [workstationToDelete, setWorkstationToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Authentication State
   const [user, setUser] = useState(null);
@@ -150,6 +154,52 @@ function App() {
     } catch (err) {
       setError(err.message);
       setLoading(false);
+    }
+  };
+
+  /**
+   * Sets the workstation to be deleted, opening the confirmation modal.
+   * @param {Object} workstation - The workstation object.
+   */
+  const confirmDelete = (workstation) => {
+    setWorkstationToDelete(workstation);
+  };
+
+  /**
+   * Cancels the deletion process and closes the modal.
+   */
+  const cancelDelete = () => {
+    setWorkstationToDelete(null);
+  };
+
+  /**
+   * Executes the deletion of the selected workstation.
+   */
+  const executeDelete = async () => {
+    if (!workstationToDelete) return;
+    if (!accessToken) return setError('Not authenticated');
+
+    setIsDeleting(true);
+    setError('');
+
+    try {
+      const res = await fetch(`${API_URL}/api/workstations/delete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({ name: workstationToDelete.name })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete workstation');
+
+      await discoverWorkstations();
+      setWorkstationToDelete(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -325,6 +375,14 @@ function App() {
                 >
                   <ExternalLink size={16} /> Launch
                 </button>
+
+                <button 
+                  className="btn-danger" 
+                  onClick={() => confirmDelete(ws)}
+                  disabled={loadingState}
+                >
+                  <Trash2 size={16} /> Delete
+                </button>
               </div>
             </div>
           );
@@ -335,6 +393,28 @@ function App() {
         <div style={{textAlign: 'center', padding: '3rem', color: 'var(--text-muted)'}}>
           <Server size={48} style={{opacity: 0.2, marginBottom: '1rem'}} />
           <p>No workstations found in {projectId}.</p>
+        </div>
+      )}
+
+      {workstationToDelete && (
+        <div className="modal-backdrop">
+          <div className="modal-content">
+            <h3>Delete Workstation</h3>
+            <p>
+              Are you sure you want to delete workstation {extractName(workstationToDelete.name)}? 
+              Depending on the cluster configuration, the associated persistent disk and all data may be permanently deleted.
+            </p>
+            <div className="modal-actions">
+              <button onClick={cancelDelete} disabled={isDeleting}>Cancel</button>
+              <button 
+                className="btn-danger" 
+                onClick={executeDelete} 
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Deleting...' : 'Confirm Delete'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

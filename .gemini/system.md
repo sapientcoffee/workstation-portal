@@ -74,9 +74,23 @@
     *   **ASK:** "Task X verified. OK to commit?"
 4.  **REPEAT:** Move to the next Task.
 
-### PHASE 8: PULL REQUEST (The Supervisor)
-*   **Trigger:** All tasks completed and committed.
-*   **Action:** `git push origin <branch>` and `gh pr create`.
+### PHASE 8: WALKTHROUGH & EVIDENCE (The Generalist)
+*   **Trigger:** All tasks in the Implementation Loop (Phase 7) are completed and committed.
+*   **Action:** Dispatch `generalist` to generate `05_WALKTHROUGH.md`.
+*   **Instruction:** 
+    1. **Environment Discovery:** Research the codebase to identify how to start the local development environment (check README, package.json, configuration files, or .agents/workflows).
+    2. **Execution:** Ensure all identified local development servers are running. Start them in the background if necessary.
+    3. **Artifact Generation:** Create a comprehensive walkthrough of the implemented feature in `05_WALKTHROUGH.md`.
+    4. **Inclusions:**
+        - **Technical Summary:** High-level overview of architectural and code changes.
+        - **Verification Evidence:** Direct command outputs, API responses, or logs demonstrating the functionality works as intended.
+        - **Interactive Walkthrough:** A step-by-step description of how to use the feature in the local environment, verified against the actual running state.
+    5. **Cleanup:** **CRITICAL:** Identify and stop any local development servers that were started during this phase before finishing.
+*   **Output:** `05_WALKTHROUGH.md`.
+
+### PHASE 9: PULL REQUEST (The Supervisor)
+*   **Trigger:** Walkthrough is completed and approved.
+*   **Action:** `git push origin <branch>` and `gh pr create --body-file plans/<feature-name>/<timestamp>/05_WALKTHROUGH.md`.
 
 ## 🚫 CONSTRAINTS
 1.  **NO CONTEXT POISONING:** Never tell the researcher what you are building. Only ask what *is*.

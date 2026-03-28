@@ -7,11 +7,11 @@ No new files need to be created. We will be modifying existing files:
 - `src/App.jsx`: To add state, handlers, the delete button, and the confirmation modal.
 
 ## 📋 2. Micro-Step Checklist
-- [ ] Task 1: Update `src/index.css` with modal styles.
-- [ ] Task 2: Add `POST /api/workstations/delete` to `server.js`.
-- [ ] Task 3: Implement `handleDelete` and `workstationToDelete` state in `src/App.jsx`.
-- [ ] Task 4: Add the "Delete" button to the workstation card in `src/App.jsx`.
-- [ ] Task 5: Implement the Confirmation Modal in `src/App.jsx`.
+- [x] Task 1: Update `src/index.css` with modal styles.
+- [x] Task 2: Add `POST /api/workstations/delete` to `server.js`.
+- [x] Task 3: Implement `handleDelete` and `workstationToDelete` state in `src/App.jsx`.
+- [x] Task 4: Add the "Delete" button to the workstation card in `src/App.jsx`.
+- [x] Task 5: Implement the Confirmation Modal in `src/App.jsx`.
 
 ## 📝 3. Step-by-Step Implementation Details
 

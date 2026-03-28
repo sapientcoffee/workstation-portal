@@ -129,6 +129,23 @@ app.post('/api/workstations/stop', asyncHandler(async (req, res) => {
 }));
 
 /**
+ * POST /api/workstations/delete
+ * Deletes a specific Google Cloud Workstation.
+ * 
+ * @name DeleteWorkstation
+ * @route {POST} /api/workstations/delete
+ * @bodyparam {string} name - The full resource name of the workstation to delete.
+ */
+app.post('/api/workstations/delete', asyncHandler(async (req, res) => {
+    const { name } = req.body;
+    if (!name || !name.startsWith('projects/')) return res.status(400).json({ error: 'Missing or invalid workstation name' });
+    const client = await getUserScopedClient(req);
+    const [operation] = await client.deleteWorkstation({ name });
+    await operation.promise();
+    res.json({ success: true });
+}));
+
+/**
  * GET /healthz
  * Service health check endpoint.
  */
