@@ -18,11 +18,15 @@ dist-ssr
 !.vscode/extensions.json
 .idea
 .DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# Keys and Credentials
+.keys/
 
 # Environment variables
 .env
@@ -34,6 +38,11 @@ dist-ssr
 # Testing
 coverage/
 .eslintcache
+
+# Local Testing / CLI Artifacts
+vite_output.txt
+ui_url.txt
+api_url.txt
 
 # Firebase
 firebase-debug.log*
