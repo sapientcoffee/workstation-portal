@@ -16,7 +16,7 @@
 
 import { useState, useEffect } from 'react';
 
-import { Terminal, Play, Square, ExternalLink, RefreshCw, Server, Settings, Search, LogOut, LogIn, Trash2 } from 'lucide-react';
+import { Terminal, Play, Square, ExternalLink, RefreshCw, Server, Settings, Search, LogOut, LogIn, Trash2, Activity, Zap, PlayCircle, Power } from 'lucide-react';
 
 import { signInWithPopup, signOut, GoogleAuthProvider } from 'firebase/auth';
 import { auth, googleProvider } from './firebase';
@@ -256,17 +256,40 @@ function App() {
   // Render Login View if not authenticated
   if (!user || !accessToken) {
       return (
-        <div className="portal-container" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '2rem'}}>
-            <div style={{textAlign: 'center'}}>
-                <Terminal size={64} className="text-primary" style={{marginBottom: '1rem', display: 'inline-block'}} />
-                <h1>Workstations Developer Portal</h1>
-                <p style={{color: 'var(--text-muted)'}}>Please sign in with your Google account to access your resources.</p>
-            </div>
+        <div className="portal-container">
+          <div className="hero-section">
+            <Terminal size={80} className="text-primary" />
+            <h1>Workstation Portal</h1>
+            <p>
+              The unified hub for managing your Google Cloud Workstations. 
+              Deploy, manage, and access your development environments with ease.
+            </p>
+            
             {error && <div className="error-msg">{error}</div>}
-            <button className="primary" onClick={handleLogin} style={{fontSize: '1.2rem', padding: '1rem 2rem', display: 'flex', alignItems: 'center'}}>
+            
+            <button className="primary" onClick={handleLogin} style={{fontSize: '1.2rem', padding: '1.25rem 2.5rem', marginTop: '1rem'}}>
                 <LogIn size={24} style={{marginRight: '0.8rem'}} />
                 Sign in with Google
             </button>
+          </div>
+
+          <div className="feature-grid">
+            <div className="feature-card">
+              <Activity size={32} />
+              <h3>Lifecycle</h3>
+              <p>Complete control over your workstations. Create, start, stop, and delete resources directly from the portal.</p>
+            </div>
+            <div className="feature-card">
+              <Settings size={32} />
+              <h3>Management</h3>
+              <p>Easily manage workstation configurations and labels. Monitor the status and location of your development nodes.</p>
+            </div>
+            <div className="feature-card">
+              <Zap size={32} />
+              <h3>Launching</h3>
+              <p>Instant access to your workstations. Launch your development environment in the browser with a single click.</p>
+            </div>
+          </div>
         </div>
       );
   }
@@ -298,6 +321,10 @@ function App() {
           <Search size={20} className="text-primary" /> Auto-Discovery
         </div>
         
+        <p className="helper-text" style={{marginTop: '-0.5rem', marginBottom: '0.5rem'}}>
+          Enter your Project ID to scan your Google Cloud environment for existing workstation clusters and configurations.
+        </p>
+        
         <div className="form-row" style={{alignItems: 'flex-end'}}>
           <div className="input-group" style={{flex: 2}}>
             <label>Google Cloud Project ID</label>
@@ -306,6 +333,9 @@ function App() {
               onChange={e => setProjectId(e.target.value)} 
               placeholder="e.g. coffee-and-codey" 
             />
+            <span className="helper-text">
+              Where do I find this? (Check the <a href="https://console.cloud.google.com/" target="_blank" rel="noopener noreferrer">GCP Console</a>)
+            </span>
           </div>
           <div className="input-group">
             <button onClick={discoverWorkstations} disabled={loading || !projectId}>
