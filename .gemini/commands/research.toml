@@ -50,14 +50,10 @@ I'm ready to research the codebase. Please provide your research question or are
 
    **IMPORTANT**: All agents are documentarians, not critics. They will describe what exists without suggesting improvements or identifying issues.
 
-   **For web research (only if user explicitly asks):**
-   - Use the **google_web_search** tool for external documentation and resources.
+   **For web research:**
+   - Use the **google_web_search** tool with the **generalist** agent for external documentation and resources.
    - Use the **web_fetch** tool to extract content from specific URLs.
    - IF you use web-research agents or tools, instruct them to return LINKS with their findings, and please INCLUDE those links in your final report.
-
-   **For Linear tickets (if relevant):**
-   - Use the **linear-ticket-reader** agent to get full details of a specific ticket.
-   - Use the **linear-searcher** agent to find related tickets or historical context.
 
    The key is to use these agents intelligently:
    - Start with locator agents to find what exists.
@@ -78,11 +74,9 @@ I'm ready to research the codebase. Please provide your research question or are
 
 5. **Gather metadata for the research document:**
    - Run `run_shell_command` to generate all relevant metadata (git hash, branch, repo name).
-   - Filename: `thoughts/shared/research/YYYY-MM-DD-ENG-XXXX-description.md`
-     - Format: `YYYY-MM-DD-ENG-XXXX-description.md` where:
-       - YYYY-MM-DD is today's date.
-       - ENG-XXXX is the ticket number (omit if no ticket).
-       - description is a brief kebab-case description of the research topic.
+   - **Filename**: `plans/<feature-name>/<YYYY-MM-DD_HHMM>/02_RESEARCH_REPORT.md`
+     - *Note*: If a feature context (name and timestamp) is provided, use this path. 
+     - *Fallback*: For general research outside of a feature workflow, use `plans/thoughts/YYYY-MM-DD-ENG-XXXX-Research-Report.md`.
 
 6. **Generate research document:**
    - Use the metadata gathered in step 5.
@@ -101,7 +95,7 @@ I'm ready to research the codebase. Please provide your research question or are
      last_updated_by: [Researcher name]
      ---
 
-     # Research: [User's Question/Topic]
+     # 02 Research Report: [User's Question/Topic]
 
      **Date**: [Current date and time]
      **Researcher**: [Researcher name]

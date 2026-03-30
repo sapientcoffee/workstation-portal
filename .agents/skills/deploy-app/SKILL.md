@@ -1,3 +1,8 @@
+---
+name: deploy-app
+description: Acts as DevOps to automatically detect the application stack, install necessary dependencies, and host the application locally.
+---
+
 # Skill: Deploy App
 
 ## Objective

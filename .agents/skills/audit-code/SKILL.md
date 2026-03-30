@@ -1,3 +1,8 @@
+---
+name: audit-code
+description: Acts as a QA Engineer to assess code alignment with technical specifications, find and fix bugs, and commit polished revisions in the app_build/ directory.
+---
+
 # Skill: Audit Code
 
 ## Objective
