@@ -3,7 +3,6 @@
 # Copyright 2026 Google LLC.
 # SPDX-License-Identifier: Apache-2.0
 
-
 # Read the input from Gemini CLI via stdin
 input=$(cat)
 
@@ -11,7 +10,7 @@ input=$(cat)
 # Use // empty to avoid "null" string
 file_path=$(echo "$input" | jq -r '.tool_input.file_path // empty')
 
-# If FILE_PATH is empty, try 'path' (some tools use that)
+# If file_path is empty, try 'path' (some tools use that)
 if [ -z "$file_path" ] || [ "$file_path" == "null" ]; then
     file_path=$(echo "$input" | jq -r '.tool_input.path // empty')
 fi
@@ -27,29 +26,31 @@ fi
 # Also handle cases where file_path might start with ./
 file_path="${file_path#./}"
 
-# Determine the project from the file path and run the respective lint command
-# We use regex matching to handle nested paths better
-case "$file_path" in
-    *barista/*)
-        echo "File changed in barista ($file_path). Running ESLint..." >&2
-        (cd barista && npm run lint) >&2
-        ;;
-    *mindset-service/*)
-        echo "File changed in mindset-service ($file_path). Running Ruff..." >&2
-        (cd mindset-service && ruff check .) >&2
-        ;;
-    *origin-service/*)
-        echo "File changed in origin-service ($file_path). Running golangci-lint..." >&2
-        (cd origin-service && golangci-lint run) >&2
-        ;;
-    *press-service/*)
-        echo "File changed in press-service ($file_path). Running ESLint..." >&2
-        (cd press-service && npm run lint) >&2
-        ;;
-    *)
-        echo "File $file_path does not belong to a known microservice or has no lint setup." >&2
-        ;;
-esac
+# Check for specific files to run relevant commands
+# If a config file changes, we might want to run a full lint across all packages
+if [[ "$file_path" == "eslint.config.js" || "$file_path" == ".prettierrc" || "$file_path" == "package.json" ]]; then
+    echo "Configuration file changed ($file_path). Running full lint..." >&2
+    npx turbo lint -- --fix >&2
+else
+    # Determine the project from the file path and run the respective lint command
+    case "$file_path" in
+        apps/web/*)
+            echo "File changed in web app ($file_path). Running ESLint with fix..." >&2
+            npx turbo lint --filter=web -- --fix >&2
+            ;;
+        apps/workstations-api/*)
+            echo "File changed in workstations-api ($file_path). Running ESLint with fix..." >&2
+            npx turbo lint --filter=workstations-api -- --fix >&2
+            ;;
+        scripts/*)
+            echo "Shared script changed ($file_path). Running full lint..." >&2
+            npx turbo lint -- --fix >&2
+            ;;
+        *)
+            echo "File $file_path does not belong to a known workspace or has no lint setup." >&2
+            ;;
+    esac
+fi
 
 # Return a valid JSON object to stdout as required by the hook interface
 echo '{"decision": "allow"}'
