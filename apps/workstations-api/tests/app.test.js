@@ -16,7 +16,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import request from 'supertest';
-import app from './app.js';
+import app from '../src/app.js';
 
 // Mock the GCP SDKs
 vi.mock('@google-cloud/workstations', () => {

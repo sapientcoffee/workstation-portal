@@ -3,35 +3,22 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "npm@11.6.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "test:api": "vitest run --root ."
-  },
-  "dependencies": {
-    "@google-cloud/workstations": "^2.2.1",
-    "cors": "^2.8.6",
-    "dotenv": "^17.3.1",
-    "express": "^5.2.1",
-    "firebase": "^12.11.0",
-    "google-auth-library": "^10.6.2",
-    "lucide-react": "^0.577.0",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "test:api": "npm run test --workspace=workstations-api"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.0",
     "eslint": "^9.39.4",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
-    "supertest": "^7.2.2",
-    "vite": "^8.0.0",
-    "vitest": "^4.1.2"
+    "turbo": "latest"
   }
 }

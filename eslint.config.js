@@ -15,18 +15,16 @@
  */
 
 import js from '@eslint/js'
-
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['**/dist/**', '**/node_modules/**']),
   {
     // Frontend files using browser globals
-    files: ['**/*.{js,jsx}'],
-    ignores: ['server.js', 'eslint.config.js', 'vite.config.js'],
+    files: ['apps/web/**/*.{js,jsx}'],
     extends: [
       js.configs.recommended,
       reactHooks.configs.flat.recommended,
@@ -51,13 +49,19 @@ export default defineConfig([
     },
   },
   {
-    // Node.js files
-    files: ['server.js', 'eslint.config.js', 'vite.config.js'],
+    // Node.js files (Backend, scripts, configs)
+    files: [
+      'apps/workstations-api/**/*.js',
+      'scripts/**/*.js',
+      '*.config.js',
+      'apps/web/vite.config.js'
+    ],
     extends: [js.configs.recommended],
     languageOptions: {
       ecmaVersion: 2020,
       globals: {
         ...globals.node,
+        ...globals.mocha, // For Vitest/tests
       },
       parserOptions: {
         ecmaVersion: 'latest',
