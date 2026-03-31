@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import express from 'express';
-import cors from 'cors';
-import { WorkstationsClient } from '@google-cloud/workstations';
-import { OAuth2Client } from 'google-auth-library';
-import dotenv from 'dotenv';
+import express from "express";
+import cors from "cors";
+import { WorkstationsClient } from "@google-cloud/workstations";
+import { OAuth2Client } from "google-auth-library";
+import dotenv from "dotenv";
 
 dotenv.config();
 
 const app = express();
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:5173'];
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",")
+  : ["http://localhost:5173"];
 app.use(cors({ origin: allowedOrigins }));
 
 app.use(express.json());
@@ -33,29 +35,29 @@ app.use(express.json());
  * Helper to create a user-scoped WorkstationsClient using an OAuth access token.
  */
 const getUserScopedClient = async (req) => {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(' ')[1];
-    
-    if (!token) {
-        const err = new Error('Unauthorized: Missing bearer token');
-        err.status = 401;
-        throw err;
-    }
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(" ")[1];
 
-    const authClient = new OAuth2Client();
-    
-    try {
-        await authClient.getTokenInfo(token);
-    } catch (e) {
-        console.error('Invalid token:', e.message);
-        const err = new Error('Unauthorized: Invalid token');
-        err.status = 401;
-        throw err;
-    }
+  if (!token) {
+    const err = new Error("Unauthorized: Missing bearer token");
+    err.status = 401;
+    throw err;
+  }
 
-    authClient.setCredentials({ access_token: token });
+  const authClient = new OAuth2Client();
 
-    return new WorkstationsClient({ authClient });
+  try {
+    await authClient.getTokenInfo(token);
+  } catch (e) {
+    console.error("Invalid token:", e.message);
+    const err = new Error("Unauthorized: Invalid token");
+    err.status = 401;
+    throw err;
+  }
+
+  authClient.setCredentials({ access_token: token });
+
+  return new WorkstationsClient({ authClient });
 };
 
 /**
@@ -65,76 +67,97 @@ const getUserScopedClient = async (req) => {
  * @param {Function} fn - The asynchronous route handler function.
  * @returns {Function} Express middleware function.
  */
-const asyncHandler = fn => (req, res, next) => {
-    Promise.resolve(fn(req, res, next)).catch(next);
+const asyncHandler = (fn) => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
 };
 
 /**
  * GET /api/workstations/all
  * Retrieves all workstations across all locations, clusters, and configurations for a specific Google Cloud Project.
  */
-app.get('/api/workstations/all', asyncHandler(async (req, res) => {
+app.get(
+  "/api/workstations/all",
+  asyncHandler(async (req, res) => {
     const { projectId } = req.query;
     if (!projectId || !/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/.test(projectId)) {
-        return res.status(400).json({ error: 'Missing or invalid projectId' });
+      return res.status(400).json({ error: "Missing or invalid projectId" });
     }
 
     const parent = `projects/${projectId}/locations/-/workstationClusters/-/workstationConfigs/-`;
     const client = await getUserScopedClient(req);
     const [workstations] = await client.listWorkstations({ parent });
     res.json(workstations);
-}));
+  }),
+);
 
 /**
  * POST /api/workstations/start
  * Starts a specific Google Cloud Workstation.
  */
-app.post('/api/workstations/start', asyncHandler(async (req, res) => {
+app.post(
+  "/api/workstations/start",
+  asyncHandler(async (req, res) => {
     const { name } = req.body;
-    if (!name || !name.startsWith('projects/')) return res.status(400).json({ error: 'Missing or invalid workstation name' });
+    if (!name || !name.startsWith("projects/"))
+      return res
+        .status(400)
+        .json({ error: "Missing or invalid workstation name" });
     const client = await getUserScopedClient(req);
     const [operation] = await client.startWorkstation({ name });
-    res.json({ message: 'Started', operation: operation.name });
-}));
+    res.json({ message: "Started", operation: operation.name });
+  }),
+);
 
 /**
  * POST /api/workstations/stop
  * Stops a specific Google Cloud Workstation.
  */
-app.post('/api/workstations/stop', asyncHandler(async (req, res) => {
+app.post(
+  "/api/workstations/stop",
+  asyncHandler(async (req, res) => {
     const { name } = req.body;
-    if (!name || !name.startsWith('projects/')) return res.status(400).json({ error: 'Missing or invalid workstation name' });
+    if (!name || !name.startsWith("projects/"))
+      return res
+        .status(400)
+        .json({ error: "Missing or invalid workstation name" });
     const client = await getUserScopedClient(req);
     const [operation] = await client.stopWorkstation({ name });
-    res.json({ message: 'Stopped', operation: operation.name });
-}));
+    res.json({ message: "Stopped", operation: operation.name });
+  }),
+);
 
 /**
  * POST /api/workstations/delete
  * Deletes a specific Google Cloud Workstation.
  */
-app.post('/api/workstations/delete', asyncHandler(async (req, res) => {
+app.post(
+  "/api/workstations/delete",
+  asyncHandler(async (req, res) => {
     const { name } = req.body;
-    if (!name || !name.startsWith('projects/')) return res.status(400).json({ error: 'Missing or invalid workstation name' });
+    if (!name || !name.startsWith("projects/"))
+      return res
+        .status(400)
+        .json({ error: "Missing or invalid workstation name" });
     const client = await getUserScopedClient(req);
     const [operation] = await client.deleteWorkstation({ name });
     await operation.promise();
     res.json({ success: true });
-}));
+  }),
+);
 
 /**
  * GET /healthz
  * Service health check endpoint.
  */
-app.get('/healthz', (req, res) => res.status(200).json({ status: 'ok' }));
+app.get("/healthz", (req, res) => res.status(200).json({ status: "ok" }));
 
 /**
  * Global Express error handling middleware.
  */
 app.use((err, req, res, _next) => {
-    console.error('API Error:', err);
-    const status = err.status || 500;
-    res.status(status).json({ error: err.message || 'Internal Server Error' });
+  console.error("API Error:", err);
+  const status = err.status || 500;
+  res.status(status).json({ error: err.message || "Internal Server Error" });
 });
 
 export default app;

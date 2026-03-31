@@ -44,6 +44,9 @@ vite_output.txt
 ui_url.txt
 api_url.txt
 
+# Turborepo
+.turbo/
+
 # Firebase
 firebase-debug.log*
 .firebase/

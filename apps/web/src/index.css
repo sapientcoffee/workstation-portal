@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap");
 
 :root {
   --bg-dark: #0f111a;
@@ -37,13 +36,21 @@
 }
 
 body {
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   background-color: var(--bg-dark);
   color: var(--text-main);
   min-height: 100vh;
-  background-image: 
-    radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.08), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.05), transparent 25%);
+  background-image:
+    radial-gradient(
+      circle at 15% 50%,
+      rgba(99, 102, 241, 0.08),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 85% 30%,
+      rgba(16, 185, 129, 0.05),
+      transparent 25%
+    );
 }
 
 .portal-container {
@@ -105,7 +112,8 @@ label {
   font-weight: 500;
 }
 
-input, select {
+input,
+select {
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
@@ -116,7 +124,8 @@ input, select {
   transition: all 0.2s ease;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 2px var(--border-glow);
 }
@@ -189,7 +198,7 @@ button:disabled {
 }
 
 .workstation-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -235,7 +244,7 @@ button:disabled {
 }
 
 .state-badge::before {
-  content: '';
+  content: "";
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -245,19 +254,27 @@ button:disabled {
   background: rgba(16, 185, 129, 0.1);
   color: var(--state-running);
 }
-.state-badge.state-running::before { background: var(--state-running); box-shadow: 0 0 8px var(--state-running); }
+.state-badge.state-running::before {
+  background: var(--state-running);
+  box-shadow: 0 0 8px var(--state-running);
+}
 
 .state-badge.state-stopped {
   background: rgba(239, 68, 68, 0.1);
   color: var(--state-stopped);
 }
-.state-badge.state-stopped::before { background: var(--state-stopped); }
+.state-badge.state-stopped::before {
+  background: var(--state-stopped);
+}
 
 .state-badge.state-starting {
   background: rgba(245, 158, 11, 0.1);
   color: var(--state-starting);
 }
-.state-badge.state-starting::before { background: var(--state-starting); animation: pulse 1.5s infinite; }
+.state-badge.state-starting::before {
+  background: var(--state-starting);
+  animation: pulse 1.5s infinite;
+}
 
 .card-actions {
   display: flex;
@@ -310,13 +327,24 @@ button:disabled {
 }
 
 @keyframes spin {
-  100% { transform: rotate(360deg); }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes pulse {
-  0% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.2); }
-  100% { opacity: 1; transform: scale(1); }
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .error-msg {

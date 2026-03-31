@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 /**
  * Custom hook for managing the application's light/dark theme.
@@ -8,18 +8,18 @@ import { useState, useEffect } from 'react';
  * @returns {Array} [theme, toggleTheme]
  */
 export function useTheme() {
-    // 1. Initialize state based on localStorage or OS preference
-    const [theme, _setTheme] = useState('dark');
+  // 1. Initialize state based on localStorage or OS preference
+  const [theme, _setTheme] = useState("dark");
 
-    // 2. Apply theme class to document body whenever it changes
-    useEffect(() => {
-        // Implementation here
-    }, [theme]);
+  // 2. Apply theme class to document body whenever it changes
+  useEffect(() => {
+    // Implementation here
+  }, [theme]);
 
-    // 3. Provide a toggle function
-    const toggleTheme = () => {
-        // Implementation here
-    };
+  // 3. Provide a toggle function
+  const toggleTheme = () => {
+    // Implementation here
+  };
 
-    return [theme, toggleTheme];
+  return [theme, toggleTheme];
 }
