@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "node src/server.js",
     "start": "node src/server.js",
-    "test": "vitest run --root ."
+    "test": "vitest run --root .",
+    "lint": "eslint .",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@google-cloud/workstations": "^2.2.1",
