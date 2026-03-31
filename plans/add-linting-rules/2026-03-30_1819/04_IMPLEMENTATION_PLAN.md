@@ -3,7 +3,7 @@
 ## 📋 Micro-Step Checklist
 - [ ] Phase 1: Dependencies and Scripts Foundation
   - [x] Step 1.A: The Verification Harness - Scripts & Turbo Setup
-  - [ ] Step 1.B: Clean Redundant Workspace Dependencies
+  - [x] Step 1.B: Clean Redundant Workspace Dependencies
   - [ ] Step 1.C: The Core Change - Root Dependencies
 - [ ] Phase 2: Configuration & TDD Validation
   - [ ] Step 2.A: The Verification Harness - TDD Failure Files
