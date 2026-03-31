@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { initializeApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -31,4 +31,4 @@ export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
 // Essential: Request the Cloud Platform scope for Workstations API access
-googleProvider.addScope("https://www.googleapis.com/auth/cloud-platform");
+googleProvider.addScope('https://www.googleapis.com/auth/cloud-platform');

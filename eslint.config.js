@@ -12,6 +12,11 @@ export default defineConfig([
   globalIgnores(['**/dist/**', '**/node_modules/**', '**/.turbo/**', '**/coverage/**']),
   js.configs.recommended,
   {
+    rules: {
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+    },
+  },
+  {
     files: ['apps/web/**/*.{js,jsx}'],
     extends: [
       react.configs.flat.recommended,

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 /**
  * Custom hook for managing the application's light/dark theme.
@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
  */
 export function useTheme() {
   // 1. Initialize state based on localStorage or OS preference
-  const [theme, _setTheme] = useState("dark");
+  const [theme, _setTheme] = useState('dark');
 
   // 2. Apply theme class to document body whenever it changes
   useEffect(() => {
