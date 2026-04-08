@@ -2,7 +2,6 @@
 
 The **DevBrew Portal** is a centralized management interface designed to streamline the developer experience when working with Google Cloud Workstations. In large-scale enterprise environments, managing dozens of workstations across multiple regions and configurations can be cumbersome via the standard Google Cloud Console.
 
-
 This portal provides:
 - **Centralized Visibility**: See all workstations across all locations and configs in a single, unified view.
 - **Improved Discoverability**: Instantly find resources assigned to your project without navigating complex console sub-menus.

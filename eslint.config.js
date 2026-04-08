@@ -17,7 +17,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['apps/web/**/*.{js,jsx}', 'apps/coffee-app/**/*.{js,jsx}'],
+    files: ['apps/web/**/*.{js,jsx}'],
     extends: [
       react.configs.flat.recommended,
       react.configs.flat['jsx-runtime'],
@@ -45,8 +45,7 @@ export default defineConfig([
       'apps/workstations-api/**/*.js',
       'scripts/**/*.js',
       '*.config.js',
-      'apps/web/vite.config.js',
-      'apps/coffee-app/vite.config.js'
+      'apps/web/vite.config.js'
     ],
     extends: [
       nodePlugin.configs['flat/recommended-script'],
