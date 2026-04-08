@@ -31,3 +31,4 @@ toolAnnotations = { agentName = "security-plan" }
 decision = "deny"
 priority = 50
 denyMessage = "The security-plan agent is restricted to writing only in the .security-audit/ directory."
+

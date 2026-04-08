@@ -1,6 +1,6 @@
 ---
 name: architect
-description: The Chief Software Architect. Performs high-level design (Where we're going) and implementation planning (How we get there).
+description: The Chief Software Architect. Manages the roadmap, prioritizes tasks, and creates detailed implementation plans.
 kind: local
 tools:
   - run_shell_command
