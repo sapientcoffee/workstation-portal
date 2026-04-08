@@ -7,8 +7,8 @@
 - [x] Phase 2: Data & State Logic
   - [x] Step 2.A: Implement data array and randomization utility tests.
   - [x] Step 2.B: Implement data array and randomization utility.
-- [ ] Phase 3: UI Component Skeletons & Implementation
-  - [ ] Step 3.A: Implement `CoffeeBackground` component.
+- [x] Phase 3: UI Component Skeletons & Implementation
+  - [x] Step 3.A: Implement `CoffeeBackground` component.
   - [ ] Step 3.B: Implement `MessageCard` component.
   - [ ] Step 3.C: Implement `RefreshButton` component.
 - [ ] Phase 4: Root Assembly
