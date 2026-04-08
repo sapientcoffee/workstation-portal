@@ -3,7 +3,7 @@
 ## 📋 Micro-Step Checklist
 - [x] Phase 1: Project & Monorepo Setup
   - [x] Step 1.A: Initialize Vite React boilerplate and Tailwind config.
-  - [ ] Step 1.B: Update ESLint and Monorepo configurations.
+  - [x] Step 1.B: Update ESLint and Monorepo configurations.
 - [ ] Phase 2: Data & State Logic
   - [ ] Step 2.A: Implement data array and randomization utility tests.
   - [ ] Step 2.B: Implement data array and randomization utility.
