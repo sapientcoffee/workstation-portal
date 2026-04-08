@@ -1,5 +1,6 @@
 {
   "general": {
+    "previewFeatures": true
   },
   "hooks": {
     "enabled": ["*"],
@@ -32,6 +33,19 @@
             "type": "command",
             "command": "$GEMINI_PROJECT_DIR/.gemini/hooks/git-status.sh",
             "description": "Injects git status into the context"
+          }
+        ]
+      }
+    ],
+    "AfterAgent": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "name": "implementation-loop",
+            "type": "command",
+            "command": "$GEMINI_PROJECT_DIR/.gemini/hooks/stop-loop.sh",
+            "description": "The Ralph infinite loop mechanism"
           }
         ]
       }
