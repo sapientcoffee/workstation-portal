@@ -4,8 +4,8 @@
 - [x] Phase 1: Project & Monorepo Setup
   - [x] Step 1.A: Initialize Vite React boilerplate and Tailwind config.
   - [x] Step 1.B: Update ESLint and Monorepo configurations.
-- [ ] Phase 2: Data & State Logic
-  - [ ] Step 2.A: Implement data array and randomization utility tests.
+- [x] Phase 2: Data & State Logic
+  - [x] Step 2.A: Implement data array and randomization utility tests.
   - [ ] Step 2.B: Implement data array and randomization utility.
 - [ ] Phase 3: UI Component Skeletons & Implementation
   - [ ] Step 3.A: Implement `CoffeeBackground` component.
