@@ -6,7 +6,7 @@
   - [x] Step 1.B: Update ESLint and Monorepo configurations.
 - [x] Phase 2: Data & State Logic
   - [x] Step 2.A: Implement data array and randomization utility tests.
-  - [ ] Step 2.B: Implement data array and randomization utility.
+  - [x] Step 2.B: Implement data array and randomization utility.
 - [ ] Phase 3: UI Component Skeletons & Implementation
   - [ ] Step 3.A: Implement `CoffeeBackground` component.
   - [ ] Step 3.B: Implement `MessageCard` component.
