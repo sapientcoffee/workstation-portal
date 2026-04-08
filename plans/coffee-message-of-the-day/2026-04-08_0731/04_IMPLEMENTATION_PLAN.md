@@ -9,7 +9,7 @@
   - [x] Step 2.B: Implement data array and randomization utility.
 - [x] Phase 3: UI Component Skeletons & Implementation
   - [x] Step 3.A: Implement `CoffeeBackground` component.
-  - [ ] Step 3.B: Implement `MessageCard` component.
+  - [x] Step 3.B: Implement `MessageCard` component.
   - [ ] Step 3.C: Implement `RefreshButton` component.
 - [ ] Phase 4: Root Assembly
   - [ ] Step 4.A: Implement `App.jsx` integration and layout.

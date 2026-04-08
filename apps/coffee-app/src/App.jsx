@@ -1,9 +1,12 @@
 import { CoffeeBackground } from './components/CoffeeBackground';
+import { MessageCard } from './components/MessageCard';
 
 function App() {
   return (
     <CoffeeBackground>
-      <h1 className="text-4xl font-bold text-stone-900 z-10">Hello Coffee</h1>
+      <div className="z-10 w-full flex justify-center px-4">
+        <MessageCard message="Good morning! Time for some coffee." />
+      </div>
     </CoffeeBackground>
   );
 }
