@@ -1,6 +1,6 @@
 # Agentic Frontend Testing Specifications
 
-This document defines the End-to-End (E2E) test cases for the Workstation Portal. These tests are designed to be executed by an AI agent (or human) using the **Chrome DevTools MCP** (`chrome-devtools` skill).
+This document defines the End-to-End (E2E) test cases for the DevBrew Portal. These tests are designed to be executed by an AI agent (or human) using the **Chrome DevTools MCP** (`chrome-devtools` skill).
 
 ## ⚠️ Safety Rules
 
