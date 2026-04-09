@@ -17,7 +17,7 @@
 import { useState, useEffect } from 'react';
 
 import {
-  Terminal,
+  Coffee,
   Play,
   Square,
   ExternalLink,
@@ -291,8 +291,8 @@ function App() {
     return (
       <div className="portal-container">
         <div className="hero-section">
-          <Terminal size={80} className="text-primary" />
-          <h1>Workstation Portal</h1>
+          <Coffee size={80} className="text-primary" />
+          <h1>DevBrew Portal</h1>
           <p>
             The unified hub for managing your Google Cloud Workstations. Deploy, manage, and access
             your development environments with ease.
@@ -348,8 +348,8 @@ function App() {
     <div className="portal-container">
       <header>
         <div className="title">
-          <Terminal size={32} />
-          Workstations Developer Portal
+          <Coffee size={32} />
+          DevBrew Portal
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
