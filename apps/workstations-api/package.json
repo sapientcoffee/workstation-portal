@@ -11,6 +11,8 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@google-cloud/logging": "^11.2.1",
+    "@google-cloud/monitoring": "^5.3.1",
     "@google-cloud/workstations": "^2.2.1",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",

@@ -17,7 +17,7 @@
 import { useState, useEffect } from 'react';
 
 import {
-  Terminal,
+  Coffee,
   Play,
   Square,
   ExternalLink,
@@ -30,10 +30,14 @@ import {
   Trash2,
   Activity,
   Zap,
+  BarChart3,
+  Monitor,
 } from 'lucide-react';
 
 import { signInWithPopup, signOut, GoogleAuthProvider } from 'firebase/auth';
 import { auth, googleProvider } from './firebase';
+
+import MetricsDashboard from './components/MetricsDashboard';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -51,6 +55,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
+  const [currentView, setCurrentView] = useState('workstations');
 
   // Deletion State
   const [workstationToDelete, setWorkstationToDelete] = useState(null);
@@ -286,8 +291,8 @@ function App() {
     return (
       <div className="portal-container">
         <div className="hero-section">
-          <Terminal size={80} className="text-primary" />
-          <h1>Workstation Portal</h1>
+          <Coffee size={80} className="text-primary" />
+          <h1>DevBrew Portal</h1>
           <p>
             The unified hub for managing your Google Cloud Workstations. Deploy, manage, and access
             your development environments with ease.
@@ -343,8 +348,8 @@ function App() {
     <div className="portal-container">
       <header>
         <div className="title">
-          <Terminal size={32} />
-          Workstations Developer Portal
+          <Coffee size={32} />
+          DevBrew Portal
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
@@ -363,155 +368,186 @@ function App() {
         </div>
       </header>
 
+      <div className="flex border-b border-gray-200 mb-6 mt-4">
+        <button
+          onClick={() => setCurrentView('workstations')}
+          className={`py-2 px-4 border-b-2 font-medium text-sm flex items-center ${
+            currentView === 'workstations'
+              ? 'border-blue-500 text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          }`}
+        >
+          <Monitor className="w-4 h-4 mr-2" />
+          Workstations
+        </button>
+        <button
+          onClick={() => setCurrentView('metrics')}
+          className={`py-2 px-4 border-b-2 font-medium text-sm flex items-center ${
+            currentView === 'metrics'
+              ? 'border-blue-500 text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          }`}
+        >
+          <BarChart3 className="w-4 h-4 mr-2" />
+          Vertex AI Metrics
+        </button>
+      </div>
+
       {error && (
         <div className="error-msg" style={{ marginBottom: '1rem' }}>
           {error}
         </div>
       )}
 
-      <div className="setup-panel">
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            fontSize: '1.1rem',
-            fontWeight: '600',
-          }}
-        >
-          <Search size={20} className="text-primary" /> Auto-Discovery
-        </div>
+      {currentView === 'workstations' ? (
+        <>
+          <div className="setup-panel">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                fontSize: '1.1rem',
+                fontWeight: '600',
+              }}
+            >
+              <Search size={20} className="text-primary" /> Auto-Discovery
+            </div>
 
-        <p className="helper-text" style={{ marginTop: '-0.5rem', marginBottom: '0.5rem' }}>
-          Enter your Project ID to scan your Google Cloud environment for existing workstation
-          clusters and configurations.
-        </p>
+            <p className="helper-text" style={{ marginTop: '-0.5rem', marginBottom: '0.5rem' }}>
+              Enter your Project ID to scan your Google Cloud environment for existing workstation
+              clusters and configurations.
+            </p>
 
-        <div className="form-row" style={{ alignItems: 'flex-end' }}>
-          <div className="input-group" style={{ flex: 2 }}>
-            <label htmlFor="projectId-input">Google Cloud Project ID</label>
-            <input
-              id="projectId-input"
-              value={projectId}
-              onChange={(e) => setProjectId(e.target.value)}
-              placeholder="e.g. coffee-and-codey"
-            />
-            <span className="helper-text">
-              Where do I find this? (Check the{' '}
-              <a href="https://console.cloud.google.com/" target="_blank" rel="noopener noreferrer">
-                GCP Console
-              </a>
-              )
-            </span>
-          </div>
-          <div className="input-group">
-            <button onClick={discoverWorkstations} disabled={loading || !projectId}>
-              {loading ? 'Discovering...' : 'Discover Workstations'}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="workstations-grid">
-        {workstations.map((ws) => {
-          const id = extractName(ws.name);
-          const location = extractLocation(ws.name);
-          const config = extractConfig(ws.name);
-          const state = getStatusString(ws.state);
-          const isRunning = state === 'RUNNING';
-          const isStopped = state === 'STOPPED';
-          const loadingState = !isTerminalState(state);
-
-          const labels = ws.labels ? Object.entries(ws.labels) : [];
-
-          return (
-            <div className="workstation-card" key={ws.name}>
-              <div className="card-header">
-                <div>
-                  <div className="workstation-name">{id}</div>
-                  <div className="workstation-id" style={{ marginTop: '2px' }}>
-                    📍 {location}
-                  </div>
-                </div>
-                <div className={`state-badge state-${state.toLowerCase()}`}>{state}</div>
+            <div className="form-row" style={{ alignItems: 'flex-end' }}>
+              <div className="input-group" style={{ flex: 2 }}>
+                <label htmlFor="projectId-input">Google Cloud Project ID</label>
+                <input
+                  id="projectId-input"
+                  value={projectId}
+                  onChange={(e) => setProjectId(e.target.value)}
+                  placeholder="e.g. coffee-and-codey"
+                />
+                <span className="helper-text">
+                  Where do I find this? (Check the{' '}
+                  <a href="https://console.cloud.google.com/" target="_blank" rel="noopener noreferrer">
+                    GCP Console
+                  </a>
+                  )
+                </span>
               </div>
-
-              <div>
-                <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-                  <Server size={14} style={{ display: 'inline', marginRight: '4px' }} />
-                  Host: {ws.host || 'Not Assigned'}
-                </div>
-
-                <div className="tags-container">
-                  <span className="tag tag-config" title="Workstation Config">
-                    ⚙️ {config}
-                  </span>
-                  {labels.map(([key, val]) => (
-                    <span className="tag" key={key}>
-                      {key}: {val}
-                    </span>
-                  ))}
-                  {/* Display annotations if they exist as tags as well */}
-                  {ws.annotations &&
-                    Object.entries(ws.annotations).map(([k, v]) => (
-                      <span className="tag" key={k} title="Annotation">
-                        📝 {k}: {v}
-                      </span>
-                    ))}
-                </div>
-              </div>
-
-              <div className="card-actions">
-                {isStopped ? (
-                  <button
-                    className="secondary"
-                    onClick={() => handleAction(ws.name, 'start')}
-                    disabled={loadingState}
-                  >
-                    <Play size={16} /> Start
-                  </button>
-                ) : (
-                  <button
-                    className="secondary"
-                    onClick={() => handleAction(ws.name, 'stop')}
-                    disabled={loadingState || !isRunning}
-                  >
-                    <Square size={16} /> Stop
-                  </button>
-                )}
-
-                <button
-                  disabled={!isRunning}
-                  onClick={() => window.open(`https://80-${ws.host}`, '_blank')}
-                  title="Launch via browser"
-                >
-                  <ExternalLink size={16} /> Launch
-                </button>
-
-                <button
-                  className="btn-danger"
-                  onClick={() => confirmDelete(ws)}
-                  disabled={loadingState}
-                >
-                  <Trash2 size={16} /> Delete
+              <div className="input-group">
+                <button onClick={discoverWorkstations} disabled={loading || !projectId}>
+                  {loading ? 'Discovering...' : 'Discover Workstations'}
                 </button>
               </div>
             </div>
-          );
-        })}
-      </div>
+          </div>
 
-      {workstations.length === 0 && hasSearched && !loading && (
-        <div
-          style={{
-            textAlign: 'center',
-            padding: '3rem',
-            color: 'var(--text-muted)',
-          }}
-        >
-          <Server size={48} style={{ opacity: 0.2, marginBottom: '1rem' }} />
-          <p>No workstations found in {projectId}.</p>
-        </div>
+          <div className="workstations-grid">
+            {workstations.map((ws) => {
+              const id = extractName(ws.name);
+              const location = extractLocation(ws.name);
+              const config = extractConfig(ws.name);
+              const state = getStatusString(ws.state);
+              const isRunning = state === 'RUNNING';
+              const isStopped = state === 'STOPPED';
+              const loadingState = !isTerminalState(state);
+
+              const labels = ws.labels ? Object.entries(ws.labels) : [];
+
+              return (
+                <div className="workstation-card" key={ws.name}>
+                  <div className="card-header">
+                    <div>
+                      <div className="workstation-name">{id}</div>
+                      <div className="workstation-id" style={{ marginTop: '2px' }}>
+                        📍 {location}
+                      </div>
+                    </div>
+                    <div className={`state-badge state-${state.toLowerCase()}`}>{state}</div>
+                  </div>
+
+                  <div>
+                    <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+                      <Server size={14} style={{ display: 'inline', marginRight: '4px' }} />
+                      Host: {ws.host || 'Not Assigned'}
+                    </div>
+
+                    <div className="tags-container">
+                      <span className="tag tag-config" title="Workstation Config">
+                        ⚙️ {config}
+                      </span>
+                      {labels.map(([key, val]) => (
+                        <span className="tag" key={key}>
+                          {key}: {val}
+                        </span>
+                      ))}
+                      {/* Display annotations if they exist as tags as well */}
+                      {ws.annotations &&
+                        Object.entries(ws.annotations).map(([k, v]) => (
+                          <span className="tag" key={k} title="Annotation">
+                            📝 {k}: {v}
+                          </span>
+                        ))}
+                    </div>
+                  </div>
+
+                  <div className="card-actions">
+                    {isStopped ? (
+                      <button
+                        className="secondary"
+                        onClick={() => handleAction(ws.name, 'start')}
+                        disabled={loadingState}
+                      >
+                        <Play size={16} /> Start
+                      </button>
+                    ) : (
+                      <button
+                        className="secondary"
+                        onClick={() => handleAction(ws.name, 'stop')}
+                        disabled={loadingState || !isRunning}
+                      >
+                        <Square size={16} /> Stop
+                      </button>
+                    )}
+
+                    <button
+                      disabled={!isRunning}
+                      onClick={() => window.open(`https://80-${ws.host}`, '_blank')}
+                      title="Launch via browser"
+                    >
+                      <ExternalLink size={16} /> Launch
+                    </button>
+
+                    <button
+                      className="btn-danger"
+                      onClick={() => confirmDelete(ws)}
+                      disabled={loadingState}
+                    >
+                      <Trash2 size={16} /> Delete
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {workstations.length === 0 && hasSearched && !loading && (
+            <div
+              style={{
+                textAlign: 'center',
+                padding: '3rem',
+                color: 'var(--text-muted)',
+              }}
+            >
+              <Server size={48} style={{ opacity: 0.2, marginBottom: '1rem' }} />
+              <p>No workstations found in {projectId}.</p>
+            </div>
+          )}
+        </>
+      ) : (
+        <MetricsDashboard token={accessToken} userEmail={user.email} projectId={projectId} />
       )}
 
       {workstationToDelete && (

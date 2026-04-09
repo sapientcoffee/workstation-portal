@@ -1,4 +1,4 @@
-# Workstation Portal: Agent Guidance
+# DevBrew Portal: Agent Guidance
 
 ## Repository Structure (Monorepo)
 The codebase has been migrated to a Turborepo-powered monorepo:

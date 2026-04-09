@@ -16,8 +16,8 @@
 
 import express from 'express';
 import cors from 'cors';
-import { WorkstationsClient } from '@google-cloud/workstations';
-import { OAuth2Client } from 'google-auth-library';
+import { getUserScopedClient } from './auth.js';
+import metricsRouter from './metrics.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -30,35 +30,6 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 app.use(cors({ origin: allowedOrigins }));
 
 app.use(express.json());
-
-/**
- * Helper to create a user-scoped WorkstationsClient using an OAuth access token.
- */
-const getUserScopedClient = async (req) => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    const err = new Error('Unauthorized: Missing bearer token');
-    err.status = 401;
-    throw err;
-  }
-
-  const authClient = new OAuth2Client();
-
-  try {
-    await authClient.getTokenInfo(token);
-  } catch (e) {
-    console.error('Invalid token:', e.message);
-    const err = new Error('Unauthorized: Invalid token');
-    err.status = 401;
-    throw err;
-  }
-
-  authClient.setCredentials({ access_token: token });
-
-  return new WorkstationsClient({ authClient });
-};
 
 /**
  * Helper middleware to handle asynchronous Express routes and standard errors.
@@ -144,6 +115,8 @@ app.post(
  * Service health check endpoint.
  */
 app.get('/healthz', (req, res) => res.status(200).json({ status: 'ok' }));
+
+app.use('/api/metrics', metricsRouter);
 
 /**
  * Global Express error handling middleware.
